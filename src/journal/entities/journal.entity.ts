@@ -1,4 +1,5 @@
 import { User } from 'src/user/entities/user.entity';
+import { UserService } from 'src/user/user.service';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,10 +8,12 @@ import {
   OneToMany,
   ManyToOne,
   JoinColumn,
+  AfterInsert,
 } from 'typeorm';
 
 @Entity('journal')
 export class Journal {
+  constructor(private readonly userService: UserService) {}
   @PrimaryGeneratedColumn()
   id: number;
 

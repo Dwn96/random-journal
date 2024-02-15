@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Journal } from './entities/journal.entity';
 import { Repository } from 'typeorm';
 import { UserService } from 'src/user/user.service';
+import * as moment from 'moment'
 
 @Injectable()
 export class JournalService {
@@ -14,9 +15,18 @@ export class JournalService {
     private readonly userService: UserService,
   ) {}
   async create(createJournalDto: CreateJournalDto) {
-    await this.userService.findOne(createJournalDto.created_by);
-    const journal = await this.journalRepository.save(createJournalDto);
-    return journal;
+    const user = await this.userService.findOne(createJournalDto.created_by);
+    console.log(user)
+    const journal = new Journal(this.userService);
+    journal.user = user;
+    journal.content = createJournalDto.content;
+    journal.created_by = createJournalDto.created_by;
+    const createdJournal = await this.journalRepository.save(createJournalDto);
+    const now = new Date().toLocaleString()
+    await this.userService.update(user.id, {
+      last_journal_entry_date: moment().toISOString(),
+    });
+    return createdJournal;
   }
 
   async findJournalsByUserId(userId: number) {

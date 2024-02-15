@@ -29,4 +29,7 @@ export class User {
 
   @OneToMany(() => Journal, (journal) => journal.user)
   journals: Journal[];
+
+  @Column({ nullable: true })
+  last_journal_entry_date: Date;
 }

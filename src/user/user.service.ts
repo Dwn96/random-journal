@@ -41,7 +41,7 @@ export class UserService {
     return user;
   }
 
-  async findUserBy(findOptions: UpdateUserDto) {
+  async findUserBy({ last_journal_entry_date, ...findOptions }: UpdateUserDto) {
     const user = await this.userRepository.findOne({
       where: findOptions,
       select: ['email', 'password', 'username'],
@@ -49,8 +49,8 @@ export class UserService {
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    await this.userRepository.update({ id }, updateUserDto);
   }
 
   remove(id: number) {

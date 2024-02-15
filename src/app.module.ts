@@ -8,6 +8,8 @@ import { NotificationService } from './notification/notification.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { MailModule } from './mail/mail.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -19,8 +21,10 @@ import { ConfigModule } from '@nestjs/config';
     DatabaseModule,
     JournalModule,
     AuthModule,
+    MailModule,
+    NotificationModule,
   ],
   controllers: [AppController],
-  providers: [AppService, NotificationService],
+  providers: [AppService],
 })
 export class AppModule {}

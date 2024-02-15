@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
@@ -14,12 +14,15 @@ export class AuthService {
     const user = await this.userService.findUserBy({
       email: createAuthDto.email,
     });
-    console.log(user);
+
+    if (!user) {
+      throw new NotFoundException('User does not exist');
+    }
     const passwordVerified = await argon2.verify(
       user.password,
       createAuthDto.password,
     );
-    if (!user || !passwordVerified) {
+    if (!passwordVerified) {
       throw new UnauthorizedException('Invalid username or password');
     }
     const payload = {
