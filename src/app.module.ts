@@ -10,6 +10,9 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { MailModule } from './mail/mail.module';
 import { NotificationModule } from './notification/notification.module';
+import { UserService } from './user/user.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './user/entities/user.entity';
 
 @Module({
   imports: [
@@ -23,8 +26,9 @@ import { NotificationModule } from './notification/notification.module';
     AuthModule,
     MailModule,
     NotificationModule,
+    TypeOrmModule.forFeature([User])
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, NotificationService, UserService],
 })
 export class AppModule {}
