@@ -32,4 +32,7 @@ export class User {
 
   @Column({ nullable: true })
   last_journal_entry_date: Date;
+
+  @Column({ nullable: true })
+  last_emailed_on: Date;
 }

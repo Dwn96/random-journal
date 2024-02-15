@@ -3,7 +3,7 @@ import { CreateJournalDto } from './dto/create-journal.dto';
 import { UpdateJournalDto } from './dto/update-journal.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Journal } from './entities/journal.entity';
-import { Repository } from 'typeorm';
+import { LessThan, Repository, MoreThan, MoreThanOrEqual, Not } from 'typeorm';
 import { UserService } from 'src/user/user.service';
 import * as moment from 'moment'
 
@@ -35,5 +35,16 @@ export class JournalService {
       created_by: userId,
     });
     return journals;
+  }
+
+  async getRandomJournal(userId:number) {
+    const yesterday = moment().subtract(1, 'days').toDate()
+    const journal = await this.journalRepository.findOneBy({
+      created_at: MoreThanOrEqual(yesterday),
+      user: {
+        id: Not(userId)
+      }
+    })
+    return journal
   }
 }

@@ -41,7 +41,7 @@ export class UserService {
     return user;
   }
 
-  async findUserBy({ last_journal_entry_date, ...findOptions }: UpdateUserDto) {
+  async findUserBy({ last_journal_entry_date, last_emailed_on, ...findOptions }: UpdateUserDto) {
     const user = await this.userRepository.findOne({
       where: findOptions,
       select: ['email', 'password', 'username'],

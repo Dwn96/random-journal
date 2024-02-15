@@ -13,6 +13,8 @@ import { NotificationModule } from './notification/notification.module';
 import { UserService } from './user/user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
+import { JournalService } from './journal/journal.service';
+import { Journal } from './journal/entities/journal.entity';
 
 @Module({
   imports: [
@@ -26,9 +28,9 @@ import { User } from './user/entities/user.entity';
     AuthModule,
     MailModule,
     NotificationModule,
-    TypeOrmModule.forFeature([User])
+    TypeOrmModule.forFeature([User, Journal])
   ],
   controllers: [AppController],
-  providers: [AppService, NotificationService, UserService],
+  providers: [AppService, NotificationService, UserService, JournalService],
 })
 export class AppModule {}

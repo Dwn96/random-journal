@@ -14,12 +14,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         return {
           transport: {
             host: configService.get<string>('MAIL_HOST'),
-            secure: false,
+            secure: true,
             auth: {
               user: configService.get<string>('MAIL_USER'),
               pass: configService.get<string>('MAIL_PASSWORD'),
             },
-            ignoreTLS: true
+            ignoreTLS: true 
           },
           defaults: {
             from: configService.get<string>('MAIL_USER'),
