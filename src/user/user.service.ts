@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +16,10 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
   async create({ email, username, password }: CreateUserDto) {
+    const existingUser = await this.userRepository.findOneBy({ email });
+    if (existingUser) {
+      throw new ConflictException(`User with email ${email} exists`);
+    }
     const user = new User();
     user.email = email;
     user.username = username;
@@ -30,6 +38,11 @@ export class UserService {
     if (!user) {
       throw new NotFoundException(`User with id ${id} does not exist`);
     }
+    return user;
+  }
+
+  async findUserBy(findOptions: UpdateUserDto) {
+    const user = await this.userRepository.findOneBy(findOptions);
     return user;
   }
 

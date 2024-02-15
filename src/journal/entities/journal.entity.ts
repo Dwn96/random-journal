@@ -20,7 +20,7 @@ export class Journal {
   @Column()
   created_by: number;
 
-  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
   @ManyToOne(() => User, (user) => user.journals)
