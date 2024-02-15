@@ -5,6 +5,6 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 export class NotificationService {
   @Cron(CronExpression.EVERY_5_SECONDS)
   triggerNotifications() {
-    console.log('Called!!!');
+    // console.log('Called!!!');
   }
 }

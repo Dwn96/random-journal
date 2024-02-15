@@ -42,7 +42,10 @@ export class UserService {
   }
 
   async findUserBy(findOptions: UpdateUserDto) {
-    const user = await this.userRepository.findOneBy(findOptions);
+    const user = await this.userRepository.findOne({
+      where: findOptions,
+      select: ['email', 'password', 'username'],
+    });
     return user;
   }
 
