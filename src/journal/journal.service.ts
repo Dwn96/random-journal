@@ -1,4 +1,4 @@
-import { Injectable, Inject, Scope } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { CreateJournalDto } from './dto/create-journal.dto';
 import { UpdateJournalDto } from './dto/update-journal.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -32,10 +32,15 @@ export class JournalService {
     return createdJournal;
   }
 
-  async findJournalsByUserId(userId: number) {
-    await this.userService.findOne(userId);
+  async findJournalsByUserId(userId?: number) {
+    let userIdFilter = userId
+    if(!userIdFilter) {
+      const { email } = (this.request as any).user;
+      const user = await this.userService.findUserBy({ email });
+      userIdFilter = user.id
+    }
     const journals = await this.journalRepository.findBy({
-      created_by: userId,
+      created_by: userIdFilter,
     });
     return journals;
   }

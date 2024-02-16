@@ -3,7 +3,6 @@ import {
   Inject,
   Injectable,
   NotFoundException,
-  Scope,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -13,7 +12,7 @@ import { Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)

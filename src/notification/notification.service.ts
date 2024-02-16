@@ -1,22 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { InjectRepository } from '@nestjs/typeorm';
 import * as moment from 'moment';
+import { Journal } from 'src/journal/entities/journal.entity';
 import { JournalService } from 'src/journal/journal.service';
 import { MailService } from 'src/mail/mail.service';
+import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
+import { MoreThanOrEqual, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class NotificationService {
   constructor(
     private readonly mailService: MailService,
-    private readonly userService: UserService,
-    private readonly journalService: JournalService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Journal)
+    private readonly journalRepository: Repository<Journal>,
   ) {}
   @Cron('0 12 * * *', {
     timeZone: 'Africa/Nairobi',
   })
   async triggerMailNotifications() {
-    const users = await this.userService.findAll();
+    const users = await this.userRepository.find();
     for (const user of users) {
       const { last_journal_entry_date, last_emailed_on } = user;
       if (!last_journal_entry_date) continue;
@@ -36,11 +42,17 @@ export class NotificationService {
 
       if (timeDiff >= 1 || daysBetweenLastEmail <= 1) return;
 
-      const recentJournal = await this.journalService.getRandomJournal(user.id);
+      const yesterday = moment().subtract(1, 'days').toDate();
+      const recentJournal = await this.journalRepository.findOneBy({
+        created_at: MoreThanOrEqual(yesterday),
+        user: {
+          id: Not(user.id),
+        },
+      });
       if (!recentJournal) return;
       console.log(user);
       console.log(recentJournal);
-      const author = await this.userService.findOne(recentJournal.created_by);
+      const author = await this.userRepository.findOneBy({id:recentJournal.created_by});
 
       console.log(author);
       await this.mailService.sendJournal(user.email, {
@@ -48,7 +60,7 @@ export class NotificationService {
         authorName: author.username,
         content: recentJournal.content,
       });
-      await this.userService.update(user.id, {
+      await this.userRepository.update(user.id, {
         last_emailed_on: moment().toISOString(),
       });
       console.log('Done');
