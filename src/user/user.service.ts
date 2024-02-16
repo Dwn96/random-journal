@@ -1,19 +1,24 @@
 import {
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
+  Scope,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @Inject(REQUEST) private readonly request: Request,
   ) {}
   async create({ email, username, password }: CreateUserDto) {
     const existingUser = await this.userRepository.findOneBy({ email });
@@ -41,10 +46,14 @@ export class UserService {
     return user;
   }
 
-  async findUserBy({ last_journal_entry_date, last_emailed_on, ...findOptions }: UpdateUserDto) {
+  async findUserBy({
+    last_journal_entry_date,
+    last_emailed_on,
+    ...findOptions
+  }: UpdateUserDto) {
     const user = await this.userRepository.findOne({
       where: findOptions,
-      select: ['email', 'password', 'username'],
+      select: ['email', 'password', 'username', 'id'],
     });
     return user;
   }
@@ -55,5 +64,11 @@ export class UserService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  async getLoggedInUser() {
+    const { email } = (this.request as any).user;
+    const user = await this.userRepository.findOneBy({ email });
+    return user;
   }
 }

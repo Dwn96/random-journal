@@ -4,8 +4,6 @@ const MIN_LENGTH = 1;
 const MAX_LENGTH = 500;
 
 export class CreateJournalDto {
-  @IsNotEmpty()
-  created_by: number;
 
   @IsNotEmpty()
   @MinLength(MIN_LENGTH)
